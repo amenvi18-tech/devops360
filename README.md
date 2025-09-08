@@ -14,13 +14,13 @@
 8. **ELK Stack** handles centralized logging
 
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to set up **DevOps360** in your environment.
 
 ---
 
-### ✅ Prerequisites
+###  Prerequisites
 Make sure you have the following installed:
 - [Git](https://git-scm.com/)
 - [Docker](https://www.docker.com/)
@@ -69,11 +69,11 @@ kubectl get svc -n default
 
 
 structure dia
-📂 devops360/
-│── 📄 README.md               # Project documentation
-│── 📄 devops360_architecture.png  # Architecture diagram
+ devops360/
+│──  README.md               # Project documentation
+│──  devops360_architecture.png  # Architecture diagram
 │
-├── 📂 infrastructure/         # Infrastructure as Code (Terraform)
+├──  infrastructure/         # Infrastructure as Code (Terraform)
 │   │── main.tf
 │   │── variables.tf
 │   │── outputs.tf
@@ -86,26 +86,26 @@ structure dia
 │   │── configmap.yaml
 │   │── secret.yaml
 │
-├── 📂 ci-cd/                  # CI/CD pipeline configs
+├──  ci-cd/                  # CI/CD pipeline configs
 │   │── Jenkinsfile
 │   │── .gitlab-ci.yml
 │
-├── 📂 monitoring/             # Monitoring & Logging
+├──  monitoring/             # Monitoring & Logging
 │   │── prometheus-values.yaml
 │   │── grafana-values.yaml
 │   │── elk-stack.yaml
 │
-├── 📂 app/                    # Sample Application (Microservice)
+├──  app/                    # Sample Application (Microservice)
 │   │── Dockerfile
 │   │── requirements.txt       # If Python app
 │   │── app.py                 # Example application code
 │
-├── 📂 scripts/                # Helper scripts
+├──  scripts/                # Helper scripts
 │   │── deploy.sh
 │   │── destroy.sh
 │   │── backup.sh
 │
-└── 📂 docs/                   # Extra documentation
+└──  docs/                   # Extra documentation
     │── getting-started.md
     │── troubleshooting.md
     │── best-practices.md
