@@ -68,7 +68,8 @@ ACCESS THE APP
 kubectl get svc -n default
 
 
-structure dia
+structure diagramm
+
  devops360/
 │──  README.md               # Project documentation
 │──  devops360_architecture.png  # Architecture diagram
