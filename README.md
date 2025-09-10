@@ -80,7 +80,7 @@ structure diagramm
 │   │── outputs.tf
 │   │── provider.tf
 │
-├── 📂 k8s/                    # Kubernetes Manifests
+├──  k8s/                    # Kubernetes Manifests
 │   │── deployment.yaml
 │   │── service.yaml
 │   │── ingress.yaml
