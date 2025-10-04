@@ -1,0 +1,81 @@
+name: Node.js CICD pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  frontend-compilation:
+    runs-on: Agent-1   # 👈 self-hosted runner
+
+    strategy:
+      matrix:
+        node-version: [18, 20, 23]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd client
+          npm run build --if-present
+
+      - name: Run frontend tests
+        run: |
+          cd client
+          npm test
+
+      - name: Syntax check for frontend JS files
+        run: |
+          cd client
+          find . -name "*.js" -exec node --check {} \;
+
+  backend-compilation:
+    runs-on: Agent-1   # 👈 self-hosted runner
+
+    strategy:
+      matrix:
+        node-version: [18, 20, 23]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd server
+          npm ci
+
+      - name: Build backend
+        run: |
+          cd server
+          npm run build --if-present
+
+      - name: Run backend tests
+        run: |
+          cd server
+          npm test
+
+      - name: Syntax check for backend JS files
+        run: |
+          cd server
+          find . -name "*.js" -exec node --check {} \;
+
