@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'   # use stable LTS unless you really need 23
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -40,9 +40,63 @@ jobs:
 
   gitleaks-scan:
     runs-on: Agent-1
+    needs: compile
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Gitleaks
-        uses: zricethezav/gitleaks-action@v2
+      - name: Gitleaks Scan
+        run: |
+          gitleaks detect --source ./client --exit-code 1
+          gitleaks detect --source ./api --exit-code 1
+
+  trivy_fs_scan:
+    runs-on: Agent-1
+    needs: gitleaks-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  sonar-frontend:
+    runs-on: Agent-1
+    needs: trivy_fs_scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SonarQube Scan (Frontend)
+        uses: SonarSource/sonarqube-scan-action@v2.0
+        with:
+          projectBaseDir: client
+          args: >
+            -Dsonar.projectKey=my-frontend
+            -Dsonar.organization=my-org
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  sonar-backend:
+    runs-on: Agent-1
+    needs: sonar-frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SonarQube Scan (Backend)
+        uses: SonarSource/sonarqube-scan-action@v2.0
+        with:
+          projectBaseDir: api
+          args: >
+            -Dsonar.projectKey=my-backend
+            -Dsonar.organization=my-org
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
