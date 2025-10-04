@@ -1,4 +1,4 @@
-name: Node.js CICD pipeline
+name: Node.js CI/CD Pipeline
 
 on:
   push:
@@ -7,75 +7,42 @@ on:
     branches: [ "main" ]
 
 jobs:
-  frontend-compilation:
-    runs-on: Agent-1   # 👈 self-hosted runner
-
-    strategy:
-      matrix:
-        node-version: [18, 20, 23]
-
+  compile:
+    runs-on: Agent-1
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22'   # use stable LTS unless you really need 23
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          cd client
-          npm ci
+        run: npm ci
 
-      - name: Build frontend
-        run: |
-          cd client
-          npm run build --if-present
+      - name: Build project
+        run: npm run build --if-present
 
-      - name: Run frontend tests
-        run: |
-          cd client
-          npm test
+      - name: Run tests
+        run: npm test
 
-      - name: Syntax check for frontend JS files
+      - name: Frontend Compilation (Syntax Check)
         run: |
           cd client
           find . -name "*.js" -exec node --check {} \;
 
-  backend-compilation:
-    runs-on: Agent-1   # 👈 self-hosted runner
-
-    strategy:
-      matrix:
-        node-version: [18, 20, 23]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
+      - name: Backend Compilation (Syntax Check)
         run: |
-          cd server
-          npm ci
-
-      - name: Build backend
-        run: |
-          cd server
-          npm run build --if-present
-
-      - name: Run backend tests
-        run: |
-          cd server
-          npm test
-
-      - name: Syntax check for backend JS files
-        run: |
-          cd server
+          cd api
           find . -name "*.js" -exec node --check {} \;
 
+  gitleaks-scan:
+    runs-on: Agent-1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Gitleaks
+        uses: zricethezav/gitleaks-action@v2
